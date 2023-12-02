@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -28,6 +29,7 @@ public class Contrato {
     @NotNull
     private Integer codigo;
     @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate dataInicio;
     @NotNull
     private Integer duracao;
