@@ -2,7 +2,8 @@ package com.myhome.myhome.controller;
 
 import java.util.List;
 import java.util.Optional;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,35 +26,49 @@ public class ContratoController {
 
     @Autowired
     private ClienteRepository clienteRepository;
-
+    Logger logger = LoggerFactory.getLogger(this.getClass());
     @CrossOrigin(origins = "*")
     @PostMapping("/cadastrarcontrato")
     public ResponseEntity<String> cadastrarContrato(@RequestBody Contrato contrato) {
+       
+        
         // Verifica se a propriedade existe
         Optional<Propriedade> propriedadeOptional = propriedadeRepository.findById(contrato.getPropriedade().getId());
         if (propriedadeOptional.isEmpty()) {
             return ResponseEntity.badRequest().body("Propriedade não encontrada");
-        }else{
+        } else {
             Propriedade propriedade = propriedadeOptional.get();
             List<Contrato> listaContratos = propriedade.getContratos();
-            for(Contrato contratoDaPropriedade:listaContratos){
-                if(contratoDaPropriedade.vigente()){
+            for (Contrato contratoDaPropriedade : listaContratos) {
+                if (contratoDaPropriedade.vigente()) {
                     return ResponseEntity.badRequest().body("Não é possível cadastrar este contrato. Existe pelo menos um contrato vigente associado a propriedade.");
                 }
             }
+        }
+        if (contrato.getInquilino() == null) {
+            String errorMessage = "Cliente (inquilino) não pode ser nulo.";
+            logger.error(errorMessage);
+
+            return ResponseEntity.badRequest().body("Cliente (inquilino) não pode ser nulo.");
+            
         }
 
         // Verifica se o inquilino existe
         Optional<Cliente> inquilinoOptional = clienteRepository.findById(contrato.getInquilino().getId());
         if (inquilinoOptional.isEmpty()) {
+            String errorMessage = "Cliente (inquilino) não pode ser nulo.";
+            logger.error(errorMessage);
+
             return ResponseEntity.badRequest().body("Inquilino não encontrado");
         }
+        
 
-        // Se ambas as instâncias existirem, salva o contrato
+        // Se ambas as instâncias existirem e não houver contratos vigentes, salva o contrato
         contratoRepository.save(contrato);
 
         return ResponseEntity.ok("Contrato cadastrado com sucesso!");
     }
+
 
      @CrossOrigin(origins = "*")
     @GetMapping("/listarcontratos")

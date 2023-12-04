@@ -29,7 +29,8 @@ public class Contrato {
     @NotNull
     private Integer codigo;
     @NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate dataInicio;
     @NotNull
     private Integer duracao;

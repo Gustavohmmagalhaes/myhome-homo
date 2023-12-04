@@ -85,7 +85,7 @@ public class Cliente {
     public List<Propriedade> getPropriedades() {
         return propriedades;
     }
-    public void setPropriedades(Propriedade propriedades) {
-        this.propriedades.add(propriedades);
+    public void setPropriedades(List<Propriedade> propriedades) {
+        this.propriedades=propriedades;
     }
 }

@@ -36,7 +36,6 @@ public class Propriedade {
     private Integer numero_da_casa;
     @NotNull
     private Float valor_mensal;
-    private TipoPropriedade tipo_de_imovel;
     @NotNull
     private Integer quantidade_de_comodos;
     @NotNull

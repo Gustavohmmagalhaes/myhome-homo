@@ -32,27 +32,35 @@ public class PropriedadeController {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    
-    @PostMapping("/cadastrarpropriedade/{clienteId}")
-    public ResponseEntity<String> cadastrarPropriedade(@PathVariable Integer clienteId, @RequestBody Propriedade propriedade) {
-        try {
-            // Verificar se o cliente existe usando o ClienteRepository
-            Optional<Cliente> clienteOptional = clienteRepository.findById(clienteId);
+    @CrossOrigin(origins = "*")
+@PostMapping("/cadastrarpropriedade/{clienteId}")
+public ResponseEntity<String> cadastrarPropriedade(@PathVariable Integer clienteId, @RequestBody Propriedade propriedade) {
+    try {
+        // Verificar se o cliente existe usando o ClienteRepository
+        Optional<Cliente> clienteOptional = clienteRepository.findById(clienteId);
 
-            // Se o cliente existir, associar a propriedade a ele
-            if (clienteOptional.isPresent()) {
-                Cliente cliente = clienteOptional.get();
-                propriedade.setProprietario(cliente);
-                cliente.setPropriedades(propriedade);
-                action.save(propriedade); // Substitua pelo método adequado em action
-                return ResponseEntity.ok("Propriedade cadastrada com sucesso!");
-            } else {
-                return ResponseEntity.badRequest().body("Cliente não encontrado");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar propriedade: " + e.getMessage());
+        // Se o cliente existir, associar a propriedade a ele
+        if (clienteOptional.isPresent()) {
+            Cliente cliente = clienteOptional.get();
+            propriedade.setProprietario(cliente);
+
+            // Adicionar a propriedade à lista de propriedades do cliente
+            List<Propriedade> propriedadesDoCliente = cliente.getPropriedades();
+            propriedadesDoCliente.add(propriedade);
+            cliente.setPropriedades(propriedadesDoCliente);
+
+            // Salvar o cliente para atualizar a associação das propriedades
+            clienteRepository.save(cliente);
+
+            return ResponseEntity.ok("Propriedade cadastrada com sucesso!");
+        } else {
+            return ResponseEntity.badRequest().body("Cliente não encontrado");
         }
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao cadastrar propriedade: " + e.getMessage());
     }
+}
+
 
     //endpoint para listar todas as propriedades
     @CrossOrigin(origins = "*")
